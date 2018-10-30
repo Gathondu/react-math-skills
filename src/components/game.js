@@ -17,7 +17,8 @@ const Button = (props) => {
     let button;
     switch (props.answerIsCorrect) {
         case true:
-            button = <button className="btn btn-success">
+            button = <button className="btn btn-success"
+                                onClick={props.acceptAnswer}>
                 <i className="fa fa-check"></i>
             </button>
             break;
@@ -36,8 +37,14 @@ const Button = (props) => {
             break;
     }
     return (
-        <div className="col-2">
+        <div className="col-2 text-center">
             {button}
+            <br/>
+            <button style={{ 'margin-top': "0.5em"}}
+                className="btn btn-warning btn-sm"
+                onClick={props.redraw}>
+                <i className="fa fa-sync-alt"></i>
+            </button>
         </div>
     );
 }
@@ -56,6 +63,9 @@ const Answer = (props) => {
 
 const Numbers = (props) => {
     const numberClassName = (number) => {
+        if (props.usedNumbers.indexOf(number) >= 0) {
+            return 'used selected';
+        }
         if (props.selectedNumbers.indexOf(number) >= 0) {
             return 'selected';
         }
@@ -81,10 +91,14 @@ class Game extends Component {
     state = {
         selectedNumbers: [],
         randomNumberOfStars: 1 + Math.floor(Math.random() * 9),
+        usedNumbers: [],
         answerIsCorrect: null,
     };
     selectedNumber = (clickedNumber) => {
         if (this.state.selectedNumbers.indexOf(clickedNumber) >= 0) {
+            return;
+        }
+        if (this.state.usedNumbers.indexOf(clickedNumber) >= 0) {
             return;
         }
         this.setState(prevState => ({
@@ -105,10 +119,28 @@ class Game extends Component {
         }));
     };
     acceptAnswer = () => {
+        this.setState(prevState => ({
+            usedNumbers: prevState.usedNumbers.concat(prevState.selectedNumbers),
+            selectedNumbers: [],
+            answerIsCorrect: null,
+            randomNumberOfStars: 1 + Math.floor(Math.random() * 9),
+        }));
+    };
+    redraw = () => {
+        this.setState(prevState => ({
+            randomNumberOfStars: 1 + Math.floor(Math.random() * 9),
+            selectedNumbers: [],
+            answerIsCorrect: null,
 
+        }));
     }
     render() {
-        const { selectedNumbers, randomNumberOfStars, answerIsCorrect } = this.state;
+        const {
+            selectedNumbers,
+            randomNumberOfStars,
+            answerIsCorrect,
+            usedNumbers
+        } = this.state;
         return (
             <div className="container">
                 <h3>Play Nine</h3>
@@ -117,13 +149,16 @@ class Game extends Component {
                     <Stars numberOfStars={randomNumberOfStars}/>
                     <Button selectedNumbers={selectedNumbers}
                         checkAnswer={this.checkAnswer}
+                        acceptAnswer={this.acceptAnswer}
+                        redraw={this.redraw}
                         answerIsCorrect={answerIsCorrect}/>
                     <Answer selectedNumbers={selectedNumbers}
                         unselectNumber={this.unselectNumber}/>
                 </div>
                 <br />
                 <Numbers selectedNumbers={selectedNumbers}
-                    selectedNumber={this.selectedNumber}/>
+                    selectedNumber={this.selectedNumber}
+                    usedNumbers={usedNumbers}/>
             </div>
         );
     }
