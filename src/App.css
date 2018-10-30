@@ -24,3 +24,6 @@ span {
   color: #99bb99;
   cursor: not-allowed;
 }
+.container {
+  margin-left: 10%;
+}

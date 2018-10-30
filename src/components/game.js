@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
-import { precompile } from 'handlebars';
 
 
 const Stars = (props) => {
@@ -88,14 +87,23 @@ const Numbers = (props) => {
 
 Numbers.list = _.range(1, 10);
 
+const DoneFame = (props) => {
+    return (
+        <div style={{ textAlign: "center", fontSize:"24px", fontStyle:"bold" }} >
+            {props.doneStatus}
+        </div>
+    );
+}
 
 class Game extends Component {
+    static randomNumber = () => 1 + Math.floor(Math.random() * 9);
     state = {
         selectedNumbers: [],
-        randomNumberOfStars: 1 + Math.floor(Math.random() * 9),
+        randomNumberOfStars: Game.randomNumber(),
         usedNumbers: [],
         answerIsCorrect: null,
         redraws: 5,
+        doneStatus: null,
     };
     selectedNumber = (clickedNumber) => {
         if (this.state.selectedNumbers.indexOf(clickedNumber) >= 0) {
@@ -126,12 +134,12 @@ class Game extends Component {
             usedNumbers: prevState.usedNumbers.concat(prevState.selectedNumbers),
             selectedNumbers: [],
             answerIsCorrect: null,
-            randomNumberOfStars: 1 + Math.floor(Math.random() * 9),
+            randomNumberOfStars: Game.randomNumber(),
         }));
     };
     redraw = () => {
         this.setState(prevState => ({
-            randomNumberOfStars: 1 + Math.floor(Math.random() * 9),
+            randomNumberOfStars: Game.randomNumber(),
             selectedNumbers: [],
             answerIsCorrect: null,
             redraws: prevState.redraws - 1,
@@ -143,7 +151,8 @@ class Game extends Component {
             randomNumberOfStars,
             answerIsCorrect,
             usedNumbers,
-            redraws
+            redraws,
+            doneStatus
         } = this.state;
         return (
             <div className="container">
@@ -161,9 +170,11 @@ class Game extends Component {
                         unselectNumber={this.unselectNumber}/>
                 </div>
                 <br />
-                <Numbers selectedNumbers={selectedNumbers}
-                    selectedNumber={this.selectedNumber}
-                    usedNumbers={usedNumbers}/>
+                {doneStatus ? <DoneFame doneStatus={doneStatus} /> :
+                    <Numbers selectedNumbers={selectedNumbers}
+                        selectedNumber={this.selectedNumber}
+                        usedNumbers={usedNumbers} />
+                }
             </div>
         );
     }
