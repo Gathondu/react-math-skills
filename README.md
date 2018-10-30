@@ -1,2 +1,3 @@
-# react-math-skills
-A maths skill game created in react
+# Playing the game.
+
+Git clone this repo using then on the terminal pointing to the root folder  run `yarn start`.
