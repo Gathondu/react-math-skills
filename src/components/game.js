@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
+import { precompile } from 'handlebars';
 
 
 const Stars = (props) => {
@@ -42,8 +43,9 @@ const Button = (props) => {
             <br/>
             <button style={{ 'margin-top': "0.5em"}}
                 className="btn btn-warning btn-sm"
-                onClick={props.redraw}>
-                <i className="fa fa-sync-alt"></i>
+                onClick={props.redraw}
+                disabled={props.redraws === 0}>
+                <i className="fa fa-sync-alt"> {props.redraws}</i>
             </button>
         </div>
     );
@@ -93,6 +95,7 @@ class Game extends Component {
         randomNumberOfStars: 1 + Math.floor(Math.random() * 9),
         usedNumbers: [],
         answerIsCorrect: null,
+        redraws: 5,
     };
     selectedNumber = (clickedNumber) => {
         if (this.state.selectedNumbers.indexOf(clickedNumber) >= 0) {
@@ -131,7 +134,7 @@ class Game extends Component {
             randomNumberOfStars: 1 + Math.floor(Math.random() * 9),
             selectedNumbers: [],
             answerIsCorrect: null,
-
+            redraws: prevState.redraws - 1,
         }));
     }
     render() {
@@ -139,7 +142,8 @@ class Game extends Component {
             selectedNumbers,
             randomNumberOfStars,
             answerIsCorrect,
-            usedNumbers
+            usedNumbers,
+            redraws
         } = this.state;
         return (
             <div className="container">
@@ -151,6 +155,7 @@ class Game extends Component {
                         checkAnswer={this.checkAnswer}
                         acceptAnswer={this.acceptAnswer}
                         redraw={this.redraw}
+                        redraws={redraws}
                         answerIsCorrect={answerIsCorrect}/>
                     <Answer selectedNumbers={selectedNumbers}
                         unselectNumber={this.unselectNumber}/>
