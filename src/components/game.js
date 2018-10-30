@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
+import { possibleCombinationSum } from '../utils.js';
 
 
 const Stars = (props) => {
@@ -135,7 +136,7 @@ class Game extends Component {
             selectedNumbers: [],
             answerIsCorrect: null,
             randomNumberOfStars: Game.randomNumber(),
-        }));
+        }), this.updateDoneStatus);
     };
     redraw = () => {
         this.setState(prevState => ({
@@ -143,7 +144,22 @@ class Game extends Component {
             selectedNumbers: [],
             answerIsCorrect: null,
             redraws: prevState.redraws - 1,
-        }));
+        }), this.updateDoneStatus);
+    }
+    possibleSolutions = ({ randomNumberOfStars, usedNumbers }) => {
+        const possibleNumbers = _.range(1, 10).filter(number =>
+            usedNumbers.indexOf(number) === -1);
+        return possibleCombinationSum(possibleNumbers, randomNumberOfStars);
+    }
+    updateDoneStatus = () => {
+        this.setState(prevState => {
+            if (prevState.usedNumbers.length === 9) {
+                return { doneStatus: 'Done Nice!' };
+            }
+            if (prevState.redraws === 0 && !this.possibleSolutions(prevState)) {
+                return { doneStatus: "Game Over!" };
+            }
+        });
     }
     render() {
         const {
