@@ -91,21 +91,27 @@ Numbers.list = _.range(1, 10);
 const DoneFame = (props) => {
     return (
         <div style={{ textAlign: "center", fontSize:"24px", fontStyle:"bold" }} >
-            {props.doneStatus}
+            <h2>{props.doneStatus}</h2>
+            <button className="btn btn-secondary"
+                    onClick={props.resetGame}>
+                Play Again
+            </button>
         </div>
     );
 }
 
 class Game extends Component {
     static randomNumber = () => 1 + Math.floor(Math.random() * 9);
-    state = {
+    static initialState = () =>({
         selectedNumbers: [],
         randomNumberOfStars: Game.randomNumber(),
         usedNumbers: [],
         answerIsCorrect: null,
         redraws: 5,
         doneStatus: null,
-    };
+    });
+    state = Game.initialState();
+    resetGame = () => this.setState(Game.initialState());
     selectedNumber = (clickedNumber) => {
         if (this.state.selectedNumbers.indexOf(clickedNumber) >= 0) {
             return;
@@ -186,7 +192,7 @@ class Game extends Component {
                         unselectNumber={this.unselectNumber}/>
                 </div>
                 <br />
-                {doneStatus ? <DoneFame doneStatus={doneStatus} /> :
+                {doneStatus ? <DoneFame resetGame={this.resetGame} doneStatus={doneStatus} /> :
                     <Numbers selectedNumbers={selectedNumbers}
                         selectedNumber={this.selectedNumber}
                         usedNumbers={usedNumbers} />
